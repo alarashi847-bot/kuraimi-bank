@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الكريمي المصرفية — نظام الإدارة المالية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --P:#7c3aed;--P2:#6d28d9;--P3:#5b21b6;--P4:#4c1d95;--P5:#2e1065;
+  --PL:#ede9fe;--PLL:#f5f3ff;--PLX:#faf9ff;
+  --gold:#c4973a;--gold-l:#fdf6e3;
+  --bg:#f8f7fc;--surface:#fff;--surface2:#f3f0fc;--surface3:#ede9fe;
+  --border:rgba(109,40,217,0.1);--border2:rgba(109,40,217,0.2);
+  --ink:#1a0533;--ink2:#2d1854;--ink3:#5b4080;--muted:#9b87c0;
+  --R:#dc2626;--RL:#fef2f2;--G:#15803d;--GL:#dcfce7;
+  --A:#b45309;--AL:#fffbeb;--T:#0d9488;--TL:#ccfbf1;
+  --mono:'JetBrains Mono',monospace;
+  --sh:0 1px 4px rgba(109,40,217,0.08);
+  --sh2:0 8px 30px rgba(109,40,217,0.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px}
+
+/* ══ SCREENS ══ */
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex}
+
+/* ══ LOGIN ══ */
+#login{
+  background:linear-gradient(135deg,var(--P5) 0%,var(--P4) 40%,var(--P3) 100%);
+  align-items:center;justify-content:center;position:relative;overflow:hidden;
+}
+#login::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,0.04),transparent 50%),radial-gradient(circle at 80% 80%,rgba(255,255,255,0.03),transparent 40%)}
+.ldeco{position:absolute;border:1px solid rgba(255,255,255,0.06);border-radius:50%}
+.login-box{background:rgba(255,255,255,0.97);border-radius:20px;padding:44px 40px;width:440px;box-shadow:0 24px 80px rgba(0,0,0,0.3);position:relative;z-index:1;animation:loginIn .4s ease}
+@keyframes loginIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-ico{width:68px;height:68px;background:linear-gradient(135deg,var(--P4),var(--P));border-radius:18px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(109,40,217,0.35);font-size:30px}
+.login-bank{font-size:20px;font-weight:900;color:var(--P3);letter-spacing:-.3px}
+.login-sub{font-size:12px;color:var(--muted);margin-top:3px;font-family:var(--mono)}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+.role-btn{padding:14px 10px;border-radius:12px;border:2px solid var(--border);background:var(--PLX);cursor:pointer;transition:all .2s;text-align:center}
+.role-btn:hover{border-color:var(--P);background:var(--PLL)}
+.role-btn.sel{border-color:var(--P);background:var(--PLL);box-shadow:0 0 0 3px rgba(124,58,237,0.12)}
+.role-icon{font-size:24px;margin-bottom:6px}
+.role-name{font-size:13px;font-weight:700;color:var(--ink2)}
+.role-desc{font-size:10px;color:var(--muted);margin-top:2px}
+.lf{margin-bottom:14px}
+.lf label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;font-family:var(--mono)}
+.lf input{width:100%;padding:11px 14px;background:var(--PLX);border:1.5px solid var(--border);border-radius:10px;color:var(--ink);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.lf input:focus{border-color:var(--P);background:var(--surface)}
+.lf-hint{font-size:11px;color:var(--muted);margin-top:4px;font-family:var(--mono)}
+.login-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--P3),var(--P));color:#fff;border:none;border-radius:10px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:8px;box-shadow:0 4px 16px rgba(109,40,217,0.3)}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(109,40,217,0.4)}
+.login-err{background:var(--RL);color:var(--R);padding:9px 14px;border-radius:8px;font-size:13px;margin-top:10px;text-align:center;display:none}
+.login-err.show{display:block}
+
+/* ══ APP ══ */
+#app{flex-direction:column;height:100vh;overflow:hidden}
+.shell{display:flex;flex:1;overflow:hidden}
+
+/* ══ SIDEBAR ══ */
+.sb{width:220px;flex-shrink:0;background:linear-gradient(180deg,var(--P4) 0%,var(--P5) 100%);display:flex;flex-direction:column;position:relative;overflow:hidden}
+.brand{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.brand-row{display:flex;align-items:center;gap:10px}
+.brand-ico{width:36px;height:36px;background:rgba(255,255,255,0.13);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.brand-name{font-size:13px;font-weight:800;color:#fff}
+.brand-sub2{font-size:9px;color:rgba(255,255,255,0.35);font-family:var(--mono)}
+.user-card{margin:10px;padding:10px 12px;background:rgba(255,255,255,0.08);border-radius:10px;border:1px solid rgba(255,255,255,0.1)}
+.uc-role{font-size:9px;color:rgba(255,255,255,0.35);font-family:var(--mono);text-transform:uppercase;letter-spacing:1px}
+.uc-name{font-size:13px;font-weight:700;color:#fff;margin-top:2px}
+.uc-badge{display:inline-block;margin-top:4px;padding:2px 8px;border-radius:20px;font-size:9px;font-family:var(--mono);font-weight:700}
+.bm{background:rgba(196,151,58,0.25);color:#fbbf24}
+.be{background:rgba(167,139,250,0.25);color:#c4b5fd}
+.curr-select{margin:0 10px 6px;padding:7px 10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:rgba(255,255,255,0.7);font-family:'Tajawal',sans-serif;font-size:12px;width:calc(100% - 20px);cursor:pointer;outline:none}
+.curr-select option{background:var(--P4);color:#fff}
+.nav{padding:8px;flex:1}
+.nav-sec{font-size:9px;color:rgba(255,255,255,0.22);font-family:var(--mono);letter-spacing:1.5px;padding:10px 8px 4px;text-transform:uppercase}
+.nb{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border-radius:7px;border:none;background:none;color:rgba(255,255,255,0.45);font-family:'Tajawal',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;text-align:right}
+.nb:hover{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.9)}
+.nb.on{background:rgba(255,255,255,0.15);color:#fff;font-weight:600}
+.nb svg{width:15px;height:15px;flex-shrink:0;opacity:.65}
+.nb.on svg{opacity:1}
+.sf{padding:10px;border-top:1px solid rgba(255,255,255,0.07)}
+.logout-btn{width:100%;padding:8px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.45);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.logout-btn:hover{background:rgba(239,68,68,0.15);color:#fca5a5}
+
+/* ══ TOPBAR ══ */
+.top{background:var(--surface);border-bottom:1px solid var(--border);padding:0 22px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:var(--sh)}
+.top-l{display:flex;align-items:center;gap:10px}
+.top-title{font-size:15px;font-weight:700;color:var(--ink)}
+.top-sep{width:1px;height:18px;background:var(--border2)}
+.top-sub{font-size:11px;color:var(--muted)}
+.top-r{display:flex;align-items:center;gap:8px}
+.top-chip{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;font-family:var(--mono)}
+.tm-chip{background:var(--gold-l);color:var(--gold)}
+.te-chip{background:var(--PLL);color:var(--P3)}
+.top-curr{font-size:12px;color:var(--P3);font-family:var(--mono);background:var(--PLL);padding:4px 10px;border-radius:6px;font-weight:700}
+
+/* ══ CONTENT ══ */
+.cnt{flex:1;overflow-y:auto;padding:20px 22px}
+.page{display:none;animation:fi .18s ease}
+.page.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ══ BUTTONS ══ */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:none;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.bp{background:var(--P);color:#fff}.bp:hover{background:var(--P2);transform:translateY(-1px);box-shadow:var(--sh2)}
+.bo{background:transparent;border:1.5px solid var(--border2);color:var(--ink2)}.bo:hover{background:var(--PLL)}
+.bg-btn{background:var(--G);color:#fff}.bg-btn:hover{background:#166534}
+.br-btn{background:var(--R);color:#fff}.br-btn:hover{background:#991b1b}
+.bsm{padding:6px 12px;font-size:12px;border-radius:7px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+
+/* ══ KPIs ══ */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;position:relative;overflow:hidden;transition:box-shadow .2s}
+.kpi:hover{box-shadow:var(--sh2)}
+.kpi::after{content:'';position:absolute;top:0;right:0;width:3px;height:100%;background:var(--kc,var(--P))}
+.kpi-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:10px}
+.kpi-val{font-size:24px;font-weight:900;font-family:var(--mono);line-height:1;letter-spacing:-1px}
+.kpi-lbl{font-size:11px;color:var(--muted);margin-top:4px;font-weight:500}
+.kpi-sub{font-size:10px;color:var(--muted);margin-top:3px;font-family:var(--mono)}
+
+/* ══ GRID ══ */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.g2w{display:grid;grid-template-columns:3fr 2fr;gap:14px;margin-bottom:14px}
+.g2ws{display:grid;grid-template-columns:3fr 2fr;gap:14px;margin-bottom:14px}
+
+/* ══ CARD ══ */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:var(--sh)}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ct{font-size:13px;font-weight:700;color:var(--ink)}
+.cs{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* ══ TABLE ══ */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:right;padding:8px 10px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-family:var(--mono);border-bottom:2px solid var(--border);background:var(--PLX)}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--PLL)}
+
+/* ══ BADGE ══ */
+.bdg{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono)}
+.bg-b{background:var(--GL);color:#14532d}.br-b{background:var(--RL);color:#991b1b}
+.ba-b{background:var(--AL);color:#92400e}.bp-b{background:var(--PLL);color:var(--P3)}
+.bgr{background:var(--surface2);color:var(--muted)}
+
+/* ══ AI BOX ══ */
+.aibox{background:var(--surface);border:1.5px solid var(--border2);border-radius:14px;overflow:hidden}
+.aibox-head{padding:10px 14px;background:linear-gradient(90deg,var(--PLL),var(--surface));border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:var(--P3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px}
+.aibox-body{padding:16px;font-size:13px;line-height:1.9;color:var(--ink2);min-height:80px;white-space:pre-wrap}
+.ai-cur{display:inline-block;width:2px;height:14px;background:var(--P);animation:blink .7s step-end infinite;vertical-align:middle;margin-right:1px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ══ PDF UPLOAD ══ */
+.pdf-zone{
+  border:2px dashed var(--border2);border-radius:14px;padding:32px 20px;
+  text-align:center;cursor:pointer;transition:all .2s;background:var(--PLX);
+  position:relative;
+}
+.pdf-zone:hover,.pdf-zone.drag{border-color:var(--P);background:var(--PLL)}
+.pdf-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.pdf-icon{font-size:36px;margin-bottom:10px;opacity:.5}
+.pdf-text{font-size:14px;color:var(--P3);font-weight:600}
+.pdf-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.pdf-preview{
+  background:var(--PLL);border:1px solid var(--border2);border-radius:10px;
+  padding:12px 14px;display:flex;align-items:center;gap:10px;margin-top:12px;
+}
+.pdf-preview-icon{font-size:22px}
+.pdf-preview-name{font-size:13px;font-weight:600;color:var(--P3);flex:1}
+.pdf-preview-size{font-size:11px;color:var(--muted);font-family:var(--mono)}
+
+/* ══ INV WORKFLOW ══ */
+.inv-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:14px;margin-bottom:10px;transition:all .15s;
+}
+.inv-card:hover{border-color:var(--border2)}
+.inv-status-row{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.status-step{display:flex;align-items:center;gap:5px;font-size:11px;font-family:var(--mono);padding:4px 10px;border-radius:6px}
+.ss-pending{background:var(--AL);color:var(--A)}
+.ss-approved{background:var(--PLL);color:var(--P3)}
+.ss-paid{background:var(--GL);color:var(--G)}
+.ss-arrow{color:var(--muted);font-size:14px}
+
+/* ══ CONFIRM MODAL ══ */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,0.5);
+  z-index:200;display:none;align-items:center;justify-content:center;
+  backdrop-filter:blur(3px);
+}
+.modal-bg.open{display:flex}
+.modal{
+  background:var(--surface);border-radius:18px;width:420px;max-width:95vw;
+  box-shadow:0 20px 60px rgba(0,0,0,0.25);animation:mIn .2s ease;overflow:hidden;
+}
+@keyframes mIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
+.modal-head{
+  padding:20px 22px 0;
+  background:linear-gradient(135deg,var(--P3),var(--P));
+  color:#fff;text-align:center;padding-bottom:20px;
+}
+.modal-icon{font-size:40px;margin-bottom:8px}
+.modal-title{font-size:17px;font-weight:800}
+.modal-sub{font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px}
+.modal-body{padding:20px 22px}
+.modal-inv-detail{background:var(--PLX);border-radius:10px;padding:14px;margin-bottom:16px}
+.mid-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)}
+.mid-row:last-child{border-bottom:none;font-weight:700;padding-top:8px}
+.modal-foot{display:flex;gap:10px;padding:0 22px 22px}
+.modal-foot .btn{flex:1;justify-content:center;padding:11px}
+
+/* ══ PROFIT CARD ══ */
+.profit-card{background:linear-gradient(135deg,var(--P3),var(--P));border-radius:14px;padding:20px;color:#fff;position:relative;overflow:hidden}
+.profit-card::before{content:'';position:absolute;top:-30px;left:-30px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,0.05)}
+
+/* ══ BARCHART ══ */
+.barchart{display:flex;flex-direction:column;gap:8px}
+.bc-row{display:flex;align-items:center;gap:9px}
+.bc-lbl{width:70px;font-size:11px;color:var(--muted);font-family:var(--mono);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+.bc-track{flex:1;height:16px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bc-fill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.23,1,.32,1);display:flex;align-items:center;justify-content:flex-end;padding-right:6px}
+.bc-fill span{font-size:10px;font-family:var(--mono);font-weight:700;color:rgba(255,255,255,.9)}
+.bc-amt{width:60px;font-size:11px;font-family:var(--mono);color:var(--ink2);text-align:left}
+
+/* ══ ALERT ══ */
+.alert{display:flex;align-items:flex-start;gap:9px;padding:10px 13px;border-radius:9px;margin-bottom:8px}
+.al-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.al-body strong{display:block;font-size:12px;font-weight:700;margin-bottom:1px}
+.al-body span{font-size:11px;line-height:1.5;color:var(--ink3)}
+.al-warn{background:var(--AL);border:1px solid rgba(180,83,9,0.15)}
+.al-good{background:var(--GL);border:1px solid rgba(21,128,61,0.15)}
+.al-info{background:var(--PLL);border:1px solid var(--border2)}
+
+/* ══ READONLY ══ */
+.readonly-bar{background:var(--gold-l);border:1px solid rgba(196,151,58,0.25);border-radius:10px;padding:11px 15px;margin-bottom:16px;display:flex;align-items:center;gap:9px;font-size:13px;color:var(--A)}
+
+/* ══ FORM ══ */
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:10px;font-weight:700;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;font-family:var(--mono)}
+input,textarea,select{width:100%;padding:8px 11px;background:var(--PLX);border:1.5px solid var(--border);border-radius:8px;color:var(--ink);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+input:focus,textarea:focus,select:focus{border-color:var(--P);background:var(--surface)}
+textarea{resize:vertical;min-height:70px;line-height:1.6}
+
+/* ══ QQ ══ */
+.qq-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.qq-btn{display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--ink2);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;text-align:right;width:100%}
+.qq-btn:hover{border-color:var(--P);background:var(--PLL);color:var(--P3)}
+
+/* ══ EMPTY ══ */
+.empty{text-align:center;padding:36px 20px}
+.empty-icon{font-size:40px;margin-bottom:10px;opacity:.2}
+.empty-title{font-size:14px;font-weight:700;color:var(--ink3);margin-bottom:4px}
+.empty-sub{font-size:12px;color:var(--muted)}
+
+/* ══ UTILS ══ */
+.div{border:none;border-top:1px solid var(--border);margin:12px 0}
+.slbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:var(--mono);margin-bottom:10px}
+.scr{max-height:320px;overflow-y:auto}
+.flex{display:flex}.ic{align-items:center}.jb{justify-content:space-between}
+.gap2{gap:8px}.gap3{gap:12px}
+.mb2{margin-bottom:8px}.mb3{margin-bottom:12px}.mb4{margin-bottom:16px}
+.mt2{margin-top:8px}.mt3{margin-top:12px}
+.tm{color:var(--muted);font-size:11px}.mono{font-family:var(--mono)}.fw7{font-weight:700}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px}
+
+/* ══ TOAST ══ */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--P4);color:#fff;padding:10px 18px;border-radius:9px;font-size:13px;z-index:999;display:flex;align-items:center;gap:8px;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(109,40,217,0.3)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="login" class="screen active">
+  <div class="ldeco" style="width:500px;height:500px;top:-150px;right:-150px"></div>
+  <div class="ldeco" style="width:300px;height:300px;bottom:-80px;left:-80px"></div>
+
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-ico">🏦</div>
+      <div class="login-bank">الكريمي المصرفية</div>
+      <div class="login-sub">نظام الإدارة المالية الذكي</div>
+    </div>
+
+    <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:16px;text-align:center">اختر صلاحيتك</div>
+
+    <div class="roles">
+      <div class="role-btn sel" id="role-manager" onclick="selectRole('manager')">
+        <div class="role-icon">👔</div>
+        <div class="role-name">المدير</div>
+        <div class="role-desc">عرض التقارير والأرقام</div>
+      </div>
+      <div class="role-btn" id="role-employee" onclick="selectRole('employee')">
+        <div class="role-icon">💼</div>
+        <div class="role-name">الموظف المالي</div>
+        <div class="role-desc">إدخال وإدارة البيانات</div>
+      </div>
+    </div>
+
+    <div class="lf">
+      <label>اسم المستخدم</label>
+      <input type="text" id="username" placeholder="أدخل اسم المستخدم">
+      <div class="lf-hint" id="u-hint">تجربة: manager</div>
+    </div>
+    <div class="lf">
+      <label>كلمة المرور</label>
+      <input type="password" id="password" placeholder="أدخل كلمة المرور" onkeydown="if(event.key==='Enter')doLogin()">
+      <div class="lf-hint">تجربة: 1234</div>
+    </div>
+    <button class="login-btn" onclick="doLogin()">دخول</button>
+    <div class="login-err" id="login-err">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app" class="screen">
+  <div class="shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sb">
+      <div class="brand">
+        <div class="brand-row">
+          <div class="brand-ico">🏦</div>
+          <div>
+            <div class="brand-name">الكريمي المصرفية</div>
+            <div class="brand-sub2">نظام الإدارة المالية</div>
+          </div>
+        </div>
+      </div>
+      <div class="user-card">
+        <div class="uc-role">مسجل الدخول</div>
+        <div class="uc-name" id="sb-name">—</div>
+        <span class="uc-badge" id="sb-badge"></span>
+      </div>
+
+      <!-- Currency selector -->
+      <select class="curr-select" id="curr-select" onchange="changeCurr()">
+        <option value="YER">🇾🇪 ريال يمني (YER)</option>
+        <option value="SAR">🇸🇦 ريال سعودي (SAR)</option>
+        <option value="USD">🇺🇸 دولار أمريكي (USD)</option>
+        <option value="EUR">🇪🇺 يورو (EUR)</option>
+        <option value="AED">🇦🇪 درهم إماراتي (AED)</option>
+        <option value="GBP">🇬🇧 جنيه إسترليني (GBP)</option>
+      </select>
+
+      <nav class="nav">
+        <!-- Manager -->
+        <div id="nav-m" style="display:none">
+          <div class="nav-sec">لوحة المدير</div>
+          <button class="nb on" onclick="go('m-dash')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            نظرة عامة
+          </button>
+          <button class="nb" onclick="go('m-invoices')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M9 14l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 4v3h8V4"/></svg>
+            الفواتير
+          </button>
+          <button class="nb" onclick="go('m-reports')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            التقارير
+          </button>
+          <button class="nb" onclick="go('m-advisor')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3"/></svg>
+            المستشار المالي
+          </button>
+        </div>
+        <!-- Employee -->
+        <div id="nav-e" style="display:none">
+          <div class="nav-sec">لوحة الموظف</div>
+          <button class="nb on" onclick="go('e-dash')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            الرئيسية
+          </button>
+          <button class="nb" onclick="go('e-invoices')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M9 14l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+            رفع الفواتير
+          </button>
+          <button class="nb" onclick="go('e-tx')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+            المعاملات
+          </button>
+        </div>
+      </nav>
+      <div class="sf">
+        <button class="logout-btn" onclick="doLogout()">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          تسجيل الخروج
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+      <div class="top">
+        <div class="top-l">
+          <div class="top-title" id="ttl">—</div>
+          <div class="top-sep"></div>
+          <div class="top-sub" id="tsub">—</div>
+        </div>
+        <div class="top-r">
+          <span class="top-curr" id="top-curr">YER</span>
+          <span class="top-chip" id="top-chip"></span>
+        </div>
+      </div>
+
+      <div class="cnt">
+
+      <!-- ══ MANAGER: DASH ══ -->
+      <div class="page" id="page-m-dash">
+        <div class="readonly-bar">
+          <span>👔</span><span>وضع العرض فقط — لإدخال البيانات يرجى تسجيل الدخول كموظف مالي</span>
+        </div>
+        <div class="kpis">
+          <div class="kpi" style="--kc:var(--P)">
+            <div class="kpi-ico" style="background:var(--PLL)">📈</div>
+            <div class="kpi-val" style="color:var(--P)" id="mk-rev">—</div>
+            <div class="kpi-lbl">الإيرادات</div>
+            <div class="kpi-sub" id="mk-rev-curr">—</div>
+          </div>
+          <div class="kpi" style="--kc:var(--R)">
+            <div class="kpi-ico" style="background:var(--RL)">💸</div>
+            <div class="kpi-val" style="color:var(--R)" id="mk-exp">—</div>
+            <div class="kpi-lbl">المصاريف</div>
+            <div class="kpi-sub" id="mk-exp-curr">—</div>
+          </div>
+          <div class="kpi" style="--kc:var(--T)">
+            <div class="kpi-ico" style="background:var(--TL)">💰</div>
+            <div class="kpi-val" style="color:var(--T)" id="mk-net">—</div>
+            <div class="kpi-lbl">صافي الربح</div>
+            <div class="kpi-sub" id="mk-margin">هامش: —</div>
+          </div>
+          <div class="kpi" style="--kc:var(--gold)">
+            <div class="kpi-ico" style="background:var(--gold-l)">⏳</div>
+            <div class="kpi-val" style="color:var(--gold)" id="mk-pend">—</div>
+            <div class="kpi-lbl">فواتير معلقة</div>
+            <div class="kpi-sub" id="mk-pendv">—</div>
+          </div>
+        </div>
+        <div class="g2w">
+          <div class="card">
+            <div class="ch"><div><div class="ct">توزيع المصاريف</div><div class="cs">حسب الفئة</div></div></div>
+            <div id="mk-chart"></div>
+            <div class="div"></div>
+            <div class="slbl">آخر المعاملات</div>
+            <div id="mk-recent"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="profit-card">
+              <div style="font-size:11px;color:rgba(255,255,255,.55);font-family:var(--mono);margin-bottom:5px;position:relative;z-index:1">صافي الربح</div>
+              <div style="font-size:32px;font-weight:900;font-family:var(--mono);line-height:1;position:relative;z-index:1" id="mk-profit-big">—</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.55);margin-top:4px;position:relative;z-index:1" id="mk-profit-curr">—</div>
+              <div style="margin-top:12px;position:relative;z-index:1">
+                <div style="height:4px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden">
+                  <div id="mk-mbar" style="height:100%;background:rgba(255,255,255,.7);border-radius:2px;width:0%;transition:width 1s ease"></div>
+                </div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:3px" id="mk-mpct">هامش: —</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="ct mb3">تنبيهات</div>
+              <div id="mk-alerts"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ MANAGER: INVOICES (view only) ══ -->
+      <div class="page" id="page-m-invoices">
+        <div class="readonly-bar">
+          <span>👔</span><span>عرض الفواتير فقط — لا يمكنك تعديل أي شيء</span>
+        </div>
+        <div class="card">
+          <div class="ch">
+            <div><div class="ct">جميع الفواتير</div><div class="cs">مسجلة من قِبل الموظف المالي</div></div>
+            <select id="m-iv-filter" onchange="renderMgrInvs()" style="width:auto;font-size:12px;padding:5px 9px;border-radius:6px">
+              <option value="all">الكل</option><option value="pending">معلقة</option>
+              <option value="approved">موافق عليها</option><option value="paid">مدفوعة</option>
+            </select>
+          </div>
+          <div id="m-invs-list" class="scr"></div>
+        </div>
+      </div>
+
+      <!-- ══ MANAGER: REPORTS ══ -->
+      <div class="page" id="page-m-reports">
+        <div class="g2ws" style="align-items:start">
+          <div>
+            <div class="card mb3">
+              <div class="ct mb3">إنشاء تقرير مالي</div>
+              <div class="fg"><label>نوع التقرير</label>
+                <select id="m-rep-type">
+                  <option value="monthly">تقرير شهري شامل</option>
+                  <option value="profit">الأرباح والخسائر</option>
+                  <option value="cashflow">التدفق النقدي</option>
+                  <option value="forecast">توقعات الربع القادم</option>
+                  <option value="tax">ملخص ضريبي</option>
+                </select>
+              </div>
+              <div class="fg"><label>ملاحظات</label>
+                <textarea id="m-rep-notes" placeholder="توجيهات إضافية..."></textarea>
+              </div>
+              <button class="btn bp" id="m-rep-btn" onclick="genReport()" style="width:100%">إنشاء التقرير</button>
+            </div>
+            <div class="card"><div class="ct mb3">ملخص الأرقام</div><div id="m-rep-sum"></div></div>
+          </div>
+          <div class="aibox">
+            <div class="aibox-head">📊 التقرير المالي — الكريمي المصرفية</div>
+            <div class="aibox-body" id="m-rep-out" style="min-height:480px">اختر نوع التقرير واضغط "إنشاء"...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ MANAGER: ADVISOR ══ -->
+      <div class="page" id="page-m-advisor">
+        <div class="g2" style="align-items:start">
+          <div>
+            <div class="card mb3">
+              <div class="ct mb3">المستشار المالي</div>
+              <div class="fg"><label>سؤالك</label>
+                <textarea id="m-adv-q" placeholder="مثال: كيف أحسن ربحية المصرف؟" style="min-height:90px"></textarea>
+              </div>
+              <button class="btn bp" id="m-adv-btn" onclick="askAdv('m')" style="width:100%">تحليل الآن</button>
+            </div>
+            <div class="card">
+              <div class="ct mb3">أسئلة جاهزة</div>
+              <div class="qq-grid">
+                <button class="qq-btn" onclick="quickQ('m','ما أكبر بند مصاريف وكيف أخفضه؟')">📊 أكبر مصروف</button>
+                <button class="qq-btn" onclick="quickQ('m','نسبة الربحية وتقييمها')">💹 نسبة الربحية</button>
+                <button class="qq-btn" onclick="quickQ('m','الفواتير المعلقة والمخاطر')">⏳ فواتير معلقة</button>
+                <button class="qq-btn" onclick="quickQ('m','توصيات تحسين التدفق النقدي')">💡 التدفق النقدي</button>
+                <button class="qq-btn" onclick="quickQ('m','مقارنة الإيرادات بالمصاريف')">⚖️ مقارنة شاملة</button>
+                <button class="qq-btn" onclick="quickQ('m','توقعات مالية الربع القادم')">🔮 توقعات مالية</button>
+              </div>
+            </div>
+          </div>
+          <div class="aibox" style="position:sticky;top:0">
+            <div class="aibox-head">💡 تحليل المستشار المالي</div>
+            <div class="aibox-body" id="m-adv-out" style="min-height:420px">اطرح سؤالاً...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ EMPLOYEE: DASH ══ -->
+      <div class="page" id="page-e-dash">
+        <div class="kpis">
+          <div class="kpi" style="--kc:var(--P)">
+            <div class="kpi-ico" style="background:var(--PLL)">📈</div>
+            <div class="kpi-val" style="color:var(--P)" id="ek-rev">0</div>
+            <div class="kpi-lbl">الإيرادات</div>
+            <div class="kpi-sub" id="ek-curr1">—</div>
+          </div>
+          <div class="kpi" style="--kc:var(--R)">
+            <div class="kpi-ico" style="background:var(--RL)">💸</div>
+            <div class="kpi-val" style="color:var(--R)" id="ek-exp">0</div>
+            <div class="kpi-lbl">المصاريف</div>
+            <div class="kpi-sub" id="ek-curr2">—</div>
+          </div>
+          <div class="kpi" style="--kc:var(--T)">
+            <div class="kpi-ico" style="background:var(--TL)">💰</div>
+            <div class="kpi-val" style="color:var(--T)" id="ek-net">0</div>
+            <div class="kpi-lbl">صافي الربح</div>
+            <div class="kpi-sub" id="ek-margin">هامش: 0%</div>
+          </div>
+          <div class="kpi" style="--kc:var(--gold)">
+            <div class="kpi-ico" style="background:var(--gold-l)">📋</div>
+            <div class="kpi-val" style="color:var(--gold)" id="ek-count">0</div>
+            <div class="kpi-lbl">إجمالي السجلات</div>
+            <div class="kpi-sub">فواتير + معاملات</div>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="ch"><div class="ct">آخر الفواتير</div><button class="btn bp bsm" onclick="go('e-invoices')">رفع فاتورة</button></div>
+            <div id="e-dash-invs"><div class="empty"><div class="empty-icon">📄</div><div class="empty-title">لا توجد فواتير</div><div class="empty-sub">ارفع أول فاتورة PDF</div></div></div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ct">آخر المعاملات</div><button class="btn bo bsm" onclick="go('e-tx')">إضافة</button></div>
+            <div id="e-dash-tx"><div class="empty"><div class="empty-icon">💱</div><div class="empty-title">لا توجد معاملات</div><div class="empty-sub">سجّل أول معاملة</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ EMPLOYEE: INVOICES ══ -->
+      <div class="page" id="page-e-invoices">
+        <div class="g2">
+          <!-- PDF Upload -->
+          <div class="card">
+            <div class="ct mb2">رفع فاتورة PDF</div>
+            <div class="cs mb3">ارفع الفاتورة وسيحللها النظام تلقائياً ويستخرج كل البيانات</div>
+
+            <div class="pdf-zone" id="pdf-zone" ondragover="e.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="onDrop(event)">
+              <input type="file" accept=".pdf,image/*" id="pdf-input" onchange="onFileSelect(event)">
+              <div class="pdf-icon">📄</div>
+              <div class="pdf-text">اسحب ملف PDF هنا أو اضغط للاختيار</div>
+              <div class="pdf-sub">يدعم: PDF، صور الفواتير (JPG، PNG)</div>
+            </div>
+
+            <div id="pdf-preview" style="display:none" class="pdf-preview">
+              <span class="pdf-preview-icon">📄</span>
+              <span class="pdf-preview-name" id="pdf-name">—</span>
+              <span class="pdf-preview-size" id="pdf-size">—</span>
+            </div>
+
+            <div style="margin-top:14px">
+              <div class="fg">
+                <label>العملة</label>
+                <select id="iv-curr">
+                  <option value="YER">ريال يمني (YER)</option>
+                  <option value="SAR">ريال سعودي (SAR)</option>
+                  <option value="USD">دولار أمريكي (USD)</option>
+                  <option value="EUR">يورو (EUR)</option>
+                  <option value="AED">درهم إماراتي (AED)</option>
+                  <option value="GBP">جنيه إسترليني (GBP)</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label>ملاحظات إضافية (اختياري)</label>
+                <textarea id="iv-note" placeholder="أي ملاحظات إضافية..."></textarea>
+              </div>
+            </div>
+
+            <button class="btn bp" id="analyze-pdf-btn" onclick="analyzePDF()" style="width:100%;margin-top:4px">
+              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              تحليل واستخراج البيانات
+            </button>
+
+            <div class="aibox mt3" id="pdf-ai-box" style="display:none">
+              <div class="aibox-head">📄 نتيجة تحليل الفاتورة</div>
+              <div class="aibox-body" id="pdf-ai-out"></div>
+            </div>
+          </div>
+
+          <!-- Invoices list -->
+          <div class="card">
+            <div class="ch">
+              <div><div class="ct">الفواتير المسجلة</div><div class="cs">كل الفواتير بمسارها</div></div>
+              <select id="iv-filter" onchange="renderInvs()" style="width:auto;font-size:12px;padding:5px 9px;border-radius:6px">
+                <option value="all">الكل</option>
+                <option value="pending">معلقة</option>
+                <option value="approved">موافق عليها</option>
+                <option value="paid">مدفوعة</option>
+              </select>
+            </div>
+            <div id="inv-list" class="scr">
+              <div class="empty"><div class="empty-icon">📄</div><div class="empty-title">لا توجد فواتير</div><div class="empty-sub">ارفع أول فاتورة PDF</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ EMPLOYEE: TRANSACTIONS ══ -->
+      <div class="page" id="page-e-tx">
+        <div class="g2ws">
+          <div class="card">
+            <div class="ch">
+              <div><div class="ct">سجل المعاملات</div></div>
+              <select id="tx-filter" onchange="renderTxTable()" style="width:auto;font-size:12px;padding:5px 9px;border-radius:6px">
+                <option value="all">الكل</option><option value="income">إيرادات</option><option value="expense">مصاريف</option>
+              </select>
+            </div>
+            <div class="scr" style="max-height:400px">
+              <div id="tx-empty" class="empty"><div class="empty-icon">💱</div><div class="empty-title">لا توجد معاملات</div></div>
+              <table class="tbl" id="tx-table" style="display:none">
+                <thead><tr><th>الوصف</th><th>الفئة</th><th>التاريخ</th><th>النوع</th><th>المبلغ</th><th>العملة</th></tr></thead>
+                <tbody id="tx-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <div class="card mb3">
+              <div class="ct mb3">تسجيل معاملة</div>
+              <div class="fg"><label>الوصف</label><input id="tx-desc" placeholder="وصف المعاملة"></div>
+              <div class="fr2">
+                <div class="fg"><label>المبلغ</label><input id="tx-amt" type="number" placeholder="0" min="0"></div>
+                <div class="fg"><label>النوع</label>
+                  <select id="tx-type"><option value="income">إيراد</option><option value="expense">مصروف</option></select>
+                </div>
+              </div>
+              <div class="fr2">
+                <div class="fg"><label>الفئة</label>
+                  <select id="tx-cat">
+                    <option>رواتب</option><option>إيجار</option><option>مواد خام</option>
+                    <option>تسويق</option><option>تقنية</option><option>مبيعات</option>
+                    <option>خدمات مصرفية</option><option>متنوع</option>
+                  </select>
+                </div>
+                <div class="fg"><label>العملة</label>
+                  <select id="tx-curr">
+                    <option value="YER">YER</option><option value="SAR">SAR</option>
+                    <option value="USD">USD</option><option value="EUR">EUR</option>
+                    <option value="AED">AED</option><option value="GBP">GBP</option>
+                  </select>
+                </div>
+              </div>
+              <div class="fg"><label>التاريخ</label><input id="tx-date" type="date"></div>
+              <button class="btn bp" onclick="addTx()" style="width:100%">تسجيل</button>
+            </div>
+            <div class="card"><div class="ct mb3">ملخص الفئات</div><div id="cat-sum"><div class="empty" style="padding:20px"><div class="empty-icon" style="font-size:28px">📊</div><div class="empty-sub">لا توجد بيانات بعد</div></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      </div><!-- cnt -->
+    </div><!-- main -->
+  </div><!-- shell -->
+</div><!-- app -->
+
+<!-- ══ CONFIRM MODAL ══ -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-icon" id="modal-icon">📋</div>
+      <div class="modal-title" id="modal-title">—</div>
+      <div class="modal-sub" id="modal-sub">—</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-inv-detail" id="modal-detail"></div>
+      <div style="font-size:13px;color:var(--ink2);line-height:1.6" id="modal-msg"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn bo" onclick="closeModal()">إلغاء</button>
+      <button class="btn" id="modal-confirm-btn" onclick="confirmAction()">تأكيد</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══ CONSTANTS ══
+const CURRENCIES = {
+  YER: { name: 'ريال يمني', symbol: 'ر.ي' },
+  SAR: { name: 'ريال سعودي', symbol: 'ر.س' },
+  USD: { name: 'دولار', symbol: '$' },
+  EUR: { name: 'يورو', symbol: '€' },
+  AED: { name: 'درهم', symbol: 'د.إ' },
+  GBP: { name: 'جنيه', symbol: '£' },
+};
+const CATS = {
+  'رواتب':'#5b21b6','إيجار':'#1e40af','مواد خام':'#b45309',
+  'تسويق':'#be185d','تقنية':'#0e7490','مبيعات':'#15803d',
+  'خدمات مصرفية':'#7c3aed','متنوع':'#64748b'
+};
+const USERS = {
+  manager:  { pass:'1234', role:'manager',  name:'المدير التنفيذي' },
+  director: { pass:'admin', role:'manager', name:'مدير المالية' },
+  employee: { pass:'1234', role:'employee', name:'الموظف المالي' },
+  finance:  { pass:'finance', role:'employee', name:'محمد الحسابات' },
+};
+
+// ══ STATE ══
+let currentUser = null;
+let currency = 'YER';
+let invoices = [];
+let transactions = [];
+let invId = 1, txId = 1;
+let pendingFile = null;
+let modalAction = null;
+let modalInvId = null;
+
+// ══ UTILS ══
+const fmt = n => Number(n).toLocaleString('ar-SA');
+const fmtK = n => n >= 1000000 ? (n/1000000).toFixed(1)+'M' : n >= 1000 ? (n/1000).toFixed(0)+'K' : String(n);
+const currSym = () => CURRENCIES[currency]?.symbol || currency;
+
+function toast(m, i='✓') {
+  const el = document.getElementById('toast');
+  el.innerHTML = `<span>${i}</span> ${m}`;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ══ CURRENCY ══
+function changeCurr() {
+  currency = document.getElementById('curr-select').value;
+  document.getElementById('top-curr').textContent = currency;
+  renderAll();
+}
+
+// ══ LOGIN ══
+let selectedRole = 'manager';
+function selectRole(r) {
+  selectedRole = r;
+  document.getElementById('role-manager').classList.toggle('sel', r==='manager');
+  document.getElementById('role-employee').classList.toggle('sel', r==='employee');
+  document.getElementById('u-hint').textContent = r==='manager' ? 'تجربة: manager' : 'تجربة: employee';
+  document.getElementById('username').value = r==='manager' ? 'manager' : 'employee';
+  document.getElementById('password').value = '1234';
+}
+function doLogin() {
+  const u = document.getElementById('username').value.trim().toLowerCase();
+  const p = document.getElementById('password').value;
+  const usr = USERS[u];
+  if (!usr || usr.pass !== p) {
+    document.getElementById('login-err').classList.add('show');
+    setTimeout(() => document.getElementById('login-err').classList.remove('show'), 3000);
+    return;
+  }
+  currentUser = { ...usr, username: u };
+  document.getElementById('login').classList.remove('active');
+  document.getElementById('app').classList.add('active');
+  document.getElementById('sb-name').textContent = usr.name;
+  document.getElementById('sb-badge').textContent = usr.role === 'manager' ? '👔 مدير' : '💼 موظف';
+  document.getElementById('sb-badge').className = 'uc-badge ' + (usr.role === 'manager' ? 'bm' : 'be');
+  document.getElementById('top-chip').textContent = usr.role === 'manager' ? '👔 مدير — عرض فقط' : '💼 موظف مالي';
+  document.getElementById('top-chip').className = 'top-chip ' + (usr.role === 'manager' ? 'tm-chip' : 'te-chip');
+  document.getElementById('nav-m').style.display = usr.role === 'manager' ? 'block' : 'none';
+  document.getElementById('nav-e').style.display = usr.role === 'employee' ? 'block' : 'none';
+  go(usr.role === 'manager' ? 'm-dash' : 'e-dash');
+}
+function doLogout() {
+  currentUser = null;
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('login').classList.add('active');
+  selectRole('manager');
+}
+
+// ══ NAV ══
+const PAGES = {
+  'm-dash':    ['نظرة عامة', 'ملخص مالي للمدير'],
+  'm-invoices':['الفواتير', 'عرض جميع الفواتير'],
+  'm-reports': ['التقارير المالية', 'تقارير احترافية للإدارة'],
+  'm-advisor': ['المستشار المالي', 'تحليل مالي ذكي'],
+  'e-dash':    ['الرئيسية', 'لوحة الموظف المالي'],
+  'e-invoices':['رفع الفواتير', 'رفع وتحليل الفواتير PDF'],
+  'e-tx':      ['المعاملات', 'سجل الحركات المالية'],
+};
+function go(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
+  const pg = document.getElementById('page-' + name);
+  if (pg) pg.classList.add('on');
+  document.querySelectorAll('.nb').forEach(b => {
+    if (b.getAttribute('onclick') === `go('${name}')`) b.classList.add('on');
+  });
+  const [t, s] = PAGES[name] || ['—', '—'];
+  document.getElementById('ttl').textContent = t;
+  document.getElementById('tsub').textContent = s;
+  if (name === 'm-dash') renderMgrDash();
+  if (name === 'm-invoices') renderMgrInvs();
+  if (name === 'm-reports') renderRepSum();
+  if (name === 'e-dash') renderEmpDash();
+  if (name === 'e-invoices') renderInvs();
+  if (name === 'e-tx') { renderTxTable(); renderCatSum(); initDate(); }
+}
+
+function initDate() {
+  const d = document.getElementById('tx-date');
+  if (d && !d.value) d.value = new Date().toISOString().slice(0, 10);
+}
+
+// ══ CALC ══
+function calc() {
+  const paid = invoices.filter(i => i.status === 'paid');
+  const allRev = [...transactions, ...paid].filter(x => x.type === 'income');
+  const allExp = [...transactions, ...paid].filter(x => x.type === 'expense');
+  const rev = allRev.reduce((s, x) => s + x.amount, 0);
+  const exp = allExp.reduce((s, x) => s + x.amount, 0);
+  const net = rev - exp;
+  const pending = invoices.filter(i => i.status === 'pending');
+  const pendVal = pending.reduce((s, i) => s + i.amount, 0);
+  const margin = rev > 0 ? Math.round(net / rev * 100) : 0;
+  return { rev, exp, net, pend: pending.length, pendVal, margin };
+}
+
+function renderAll() {
+  const page = document.querySelector('.page.on')?.id?.replace('page-', '');
+  if (page) go(page);
+}
+
+// ══ MANAGER DASH ══
+function renderMgrDash() {
+  const s = calc();
+  const sym = currSym();
+  const noData = invoices.length === 0 && transactions.length === 0;
+  const fv = v => noData ? '—' : fmt(v);
+
+  document.getElementById('mk-rev').textContent = fv(s.rev);
+  document.getElementById('mk-exp').textContent = fv(s.exp);
+  document.getElementById('mk-net').textContent = fv(s.net);
+  document.getElementById('mk-pend').textContent = noData ? '—' : s.pend;
+  document.getElementById('mk-rev-curr').textContent = sym;
+  document.getElementById('mk-exp-curr').textContent = sym;
+  document.getElementById('mk-margin').textContent = noData ? 'هامش: —' : `هامش: ${s.margin}%`;
+  document.getElementById('mk-pendv').textContent = noData ? '—' : `${fmt(s.pendVal)} ${sym}`;
+  document.getElementById('mk-profit-big').textContent = fv(s.net);
+  document.getElementById('mk-profit-curr').textContent = sym;
+  document.getElementById('mk-mbar').style.width = noData ? '0%' : Math.min(s.margin, 100) + '%';
+  document.getElementById('mk-mpct').textContent = noData ? 'هامش: —' : `هامش الربح: ${s.margin}%`;
+
+  // Chart
+  const chartEl = document.getElementById('mk-chart');
+  const cats = {};
+  [...transactions, ...invoices.filter(i=>i.status==='paid')].filter(x=>x.type==='expense').forEach(x=>{
+    cats[x.cat] = (cats[x.cat] || 0) + x.amount;
+  });
+  const sorted = Object.entries(cats).sort((a,b) => b[1]-a[1]);
+  const max = sorted[0]?.[1] || 1;
+  chartEl.innerHTML = sorted.length
+    ? `<div class="barchart">${sorted.slice(0,6).map(([c,v])=>`
+        <div class="bc-row">
+          <div class="bc-lbl">${c.slice(0,7)}</div>
+          <div class="bc-track"><div class="bc-fill" style="width:${Math.round(v/max*100)}%;background:${CATS[c]||'#64748b'}"><span>${Math.round(v/max*100)}%</span></div></div>
+          <div class="bc-amt">${fmtK(v)}</div>
+        </div>`).join('')}</div>`
+    : '<div class="empty" style="padding:20px"><div class="empty-icon">📊</div><div class="empty-sub">لا توجد بيانات بعد</div></div>';
+
+  // Recent tx
+  const recent = [...transactions].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,5);
+  document.getElementById('mk-recent').innerHTML = recent.length
+    ? recent.map(t=>`<div class="flex ic jb mb2" style="padding:6px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-size:12px;font-weight:600">${t.desc}</div><div class="tm">${t.cat} · ${t.date} · ${t.curr||currency}</div></div>
+        <span style="font-family:var(--mono);font-size:12px;font-weight:700;color:${t.type==='income'?'var(--P)':'var(--R)'}">
+          ${t.type==='income'?'+':'-'}${fmt(t.amount)}
+        </span></div>`).join('')
+    : '<div class="empty" style="padding:16px"><div class="empty-sub">لا توجد معاملات</div></div>';
+
+  // Alerts
+  const aEl = document.getElementById('mk-alerts');
+  if (noData) {
+    aEl.innerHTML = '<div class="alert al-info"><div class="al-icon">ℹ️</div><div class="al-body"><strong>لا توجد بيانات</strong><span>يرجى الدخول كموظف وإدخال البيانات</span></div></div>';
+  } else {
+    const alerts = [];
+    if (s.pend > 0) alerts.push({t:'warn',icon:'⚠️',title:`${s.pend} فواتير معلقة`,text:`${fmt(s.pendVal)} ${sym}`});
+    if (s.margin > 40) alerts.push({t:'good',icon:'✅',title:'هامش ربح ممتاز',text:`${s.margin}% أداء قوي`});
+    if (!alerts.length) alerts.push({t:'info',icon:'📋',title:'الوضع المالي طبيعي',text:'لا توجد تنبيهات مهمة'});
+    aEl.innerHTML = alerts.map(a=>`<div class="alert al-${a.t}"><div class="al-icon">${a.icon}</div><div class="al-body"><strong>${a.title}</strong><span>${a.text}</span></div></div>`).join('');
+  }
+}
+
+// ══ MANAGER INVOICES ══
+function renderMgrInvs() {
+  const el = document.getElementById('m-invs-list');
+  if (!el) return;
+  const f = document.getElementById('m-iv-filter')?.value || 'all';
+  let list = [...invoices];
+  if (f !== 'all') list = list.filter(i => i.status === f);
+  list.sort((a, b) => new Date(b.date||0) - new Date(a.date||0));
+  if (!list.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📄</div><div class="empty-title">لا توجد فواتير</div></div>';
+    return;
+  }
+  el.innerHTML = list.map(i => `
+    <div class="inv-card">
+      <div class="flex ic jb">
+        <div class="flex ic gap2">
+          <span style="font-size:18px">${i.type==='income'?'📥':'📤'}</span>
+          <div>
+            <div style="font-size:13px;font-weight:700">${i.vendor||'—'}</div>
+            <div class="tm">${i.num||'—'} · ${i.date||'—'} · ${i.cat||'—'} · ${i.curr||currency}</div>
+          </div>
+        </div>
+        <div style="text-align:left">
+          <div style="font-family:var(--mono);font-size:14px;font-weight:800;color:${i.type==='income'?'var(--P)':'var(--R)'}">
+            ${fmt(i.amount||0)}
+          </div>
+          ${statusBadge(i.status)}
+        </div>
+      </div>
+      <div class="inv-status-row">
+        <span class="status-step ${i.status==='pending'||i.status==='approved'||i.status==='paid'?'ss-pending':''}">📋 معلقة</span>
+        <span class="ss-arrow">→</span>
+        <span class="status-step ${i.status==='approved'||i.status==='paid'?'ss-approved':''}">✅ موافق عليها</span>
+        <span class="ss-arrow">→</span>
+        <span class="status-step ${i.status==='paid'?'ss-paid':''}">💳 مدفوعة</span>
+      </div>
+    </div>`).join('');
+}
+
+// ══ PDF UPLOAD ══
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('pdf-zone').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+}
+function onFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) handleFile(file);
+}
+function handleFile(file) {
+  pendingFile = file;
+  document.getElementById('pdf-preview').style.display = 'flex';
+  document.getElementById('pdf-name').textContent = file.name;
+  document.getElementById('pdf-size').textContent = (file.size / 1024).toFixed(0) + ' KB';
+}
+
+async function analyzePDF() {
+  if (!pendingFile) { toast('اختر ملف PDF أولاً', '⚠'); return; }
+  const btn = document.getElementById('analyze-pdf-btn');
+  const box = document.getElementById('pdf-ai-box');
+  const out = document.getElementById('pdf-ai-out');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="width:11px;height:11px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block"></span> جاري التحليل...';
+  box.style.display = 'block';
+  const cur = document.createElement('span'); cur.className = 'ai-cur';
+  out.textContent = ''; out.appendChild(cur);
+
+  try {
+    // Convert file to base64
+    const base64 = await fileToBase64(pendingFile);
+    const isImage = pendingFile.type.startsWith('image/');
+    const isPDF = pendingFile.type === 'application/pdf';
+    const ivCurr = document.getElementById('iv-curr').value;
+    const note = document.getElementById('iv-note').value;
+
+    let messages;
+    if (isPDF) {
+      messages = [{
+        role: 'user',
+        content: [
+          { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } },
+          { type: 'text', text: `أنت محاسب متخصص لمصرف الكريمي. حلل هذه الفاتورة واستخرج جميع المعلومات باللغة العربية.\nالعملة المستخدمة: ${ivCurr}\n${note?'ملاحظات: '+note:''}\n\nأجب بـ JSON فقط بهذا الشكل:\n{"vendor":"اسم الجهة","num":"رقم الفاتورة","date":"YYYY-MM-DD","amount":رقم,"type":"income أو expense","cat":"الفئة","summary":"ملخص تحليل الفاتورة في جملتين","warnings":["تحذير1"],"items":["بند1","بند2"]}` }
+        ]
+      }];
+    } else if (isImage) {
+      const mediaType = pendingFile.type;
+      messages = [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+          { type: 'text', text: `أنت محاسب متخصص لمصرف الكريمي. حلل هذه الفاتورة واستخرج جميع المعلومات باللغة العربية.\nالعملة: ${ivCurr}\n${note?'ملاحظات: '+note:''}\n\nأجب بـ JSON فقط:\n{"vendor":"اسم الجهة","num":"رقم الفاتورة","date":"YYYY-MM-DD","amount":رقم,"type":"income أو expense","cat":"الفئة","summary":"ملخص","warnings":["تحذير"],"items":["بند1"]}` }
+        ]
+      }];
+    }
+
+    const res = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const text = data.content.map(b => b.text||'').join('');
+    const clean = text.replace(/```json|```/g, '').trim();
+    let parsed;
+    try { parsed = JSON.parse(clean); } catch(e) { parsed = null; }
+
+    cur.remove();
+
+    if (parsed) {
+      // Show extracted data nicely
+      out.innerHTML = `<div style="margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:var(--P3);margin-bottom:8px">✅ تم استخراج البيانات</div>
+        <div class="modal-inv-detail">
+          <div class="mid-row"><span class="tm">الجهة</span><span class="fw7">${parsed.vendor||'—'}</span></div>
+          <div class="mid-row"><span class="tm">رقم الفاتورة</span><span class="mono">${parsed.num||'—'}</span></div>
+          <div class="mid-row"><span class="tm">التاريخ</span><span class="mono">${parsed.date||'—'}</span></div>
+          <div class="mid-row"><span class="tm">النوع</span><span>${parsed.type==='income'?'📥 إيراد':'📤 مصروف'}</span></div>
+          <div class="mid-row"><span class="tm">الفئة</span><span>${parsed.cat||'—'}</span></div>
+          <div class="mid-row"><span class="tm">المبلغ</span><span class="fw7 mono" style="color:${parsed.type==='income'?'var(--P)':'var(--R)'}; font-size:16px">${fmt(parsed.amount||0)} ${ivCurr}</span></div>
+        </div>
+        ${parsed.items?.length?`<div style="font-size:12px;color:var(--ink3);margin-bottom:8px"><strong>البنود:</strong> ${parsed.items.join(' · ')}</div>`:''}
+        ${parsed.warnings?.length?`<div style="background:var(--AL);padding:8px 10px;border-radius:7px;font-size:12px;color:var(--A)">⚠️ ${parsed.warnings.join(' · ')}</div>`:''}
+        <div style="font-size:12px;color:var(--ink3);margin-top:8px;padding:10px;background:var(--PLX);border-radius:8px;line-height:1.6">${parsed.summary||''}</div>
+      </div>`;
+
+      // Add confirm button
+      const confirmDiv = document.createElement('div');
+      confirmDiv.style.marginTop = '12px';
+      confirmDiv.innerHTML = `<button class="btn bp" style="width:100%" onclick="confirmAddInv(${JSON.stringify(parsed).replace(/"/g,'&quot;')}, '${ivCurr}')">
+        ✅ تأكيد إضافة الفاتورة
+      </button>`;
+      out.appendChild(confirmDiv);
+    } else {
+      out.textContent = text;
+    }
+  } catch(e) {
+    document.getElementById('pdf-ai-out').textContent = 'حدث خطأ: ' + (e.message || 'تأكد من رفع النظام على Vercel');
+    const cur2 = document.getElementById('pdf-ai-out').querySelector('.ai-cur');
+    if (cur2) cur2.remove();
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> تحليل واستخراج البيانات';
+}
+
+function confirmAddInv(parsed, curr) {
+  // Show confirmation modal
+  modalAction = 'add_inv';
+  modalInvId = null;
+  document.getElementById('modal-icon').textContent = '📋';
+  document.getElementById('modal-title').textContent = 'تأكيد إضافة الفاتورة';
+  document.getElementById('modal-sub').textContent = 'هل البيانات صحيحة؟';
+  document.getElementById('modal-detail').innerHTML = `
+    <div class="mid-row"><span class="tm">الجهة</span><span class="fw7">${parsed.vendor||'—'}</span></div>
+    <div class="mid-row"><span class="tm">رقم الفاتورة</span><span class="mono">${parsed.num||'—'}</span></div>
+    <div class="mid-row"><span class="tm">التاريخ</span><span class="mono">${parsed.date||'—'}</span></div>
+    <div class="mid-row"><span class="tm">النوع</span><span>${parsed.type==='income'?'📥 إيراد':'📤 مصروف'}</span></div>
+    <div class="mid-row"><span class="tm">المبلغ</span><span class="fw7 mono" style="color:${parsed.type==='income'?'var(--P)':'var(--R)'};font-size:15px">${fmt(parsed.amount||0)} ${curr}</span></div>`;
+  document.getElementById('modal-msg').textContent = 'بعد التأكيد ستُضاف الفاتورة كـ"معلقة". عند تنفيذ الدفع ستتحول تلقائياً إلى "مدفوعة".';
+  const btn = document.getElementById('modal-confirm-btn');
+  btn.textContent = 'إضافة الفاتورة';
+  btn.className = 'btn bp';
+  btn.dataset.parsed = JSON.stringify(parsed);
+  btn.dataset.curr = curr;
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function confirmAction() {
+  const btn = document.getElementById('modal-confirm-btn');
+  if (modalAction === 'add_inv') {
+    const parsed = JSON.parse(btn.dataset.parsed || '{}');
+    const curr = btn.dataset.curr || currency;
+    invoices.push({
+      id: invId++,
+      vendor: parsed.vendor || '—',
+      num: parsed.num || `INV-${String(invId).padStart(3,'0')}`,
+      date: parsed.date || new Date().toISOString().slice(0,10),
+      amount: parsed.amount || 0,
+      type: parsed.type || 'expense',
+      cat: parsed.cat || 'متنوع',
+      curr, status: 'pending',
+      pdfName: pendingFile?.name,
+    });
+    pendingFile = null;
+    document.getElementById('pdf-preview').style.display = 'none';
+    document.getElementById('pdf-ai-box').style.display = 'none';
+    document.getElementById('pdf-ai-out').textContent = '';
+    document.getElementById('pdf-input').value = '';
+    renderInvs();
+    renderEmpDash();
+    toast('تمت إضافة الفاتورة بنجاح');
+  } else if (modalAction === 'confirm_payment') {
+    const inv = invoices.find(i => i.id === modalInvId);
+    if (inv) {
+      inv.status = 'paid';
+      inv.paidAt = new Date().toISOString().slice(0,10);
+      renderInvs();
+      renderEmpDash();
+      toast(`✅ تم تأكيد الدفع — الفاتورة أصبحت "مدفوعة" تلقائياً`);
+    }
+  }
+  closeModal();
+}
+
+function openPaymentConfirm(id) {
+  const inv = invoices.find(i => i.id === id);
+  if (!inv) return;
+  modalAction = 'confirm_payment';
+  modalInvId = id;
+  document.getElementById('modal-icon').textContent = '💳';
+  document.getElementById('modal-title').textContent = 'تأكيد استلام الدفعة';
+  document.getElementById('modal-sub').textContent = 'بعد التأكيد ستتحول الفاتورة إلى "مدفوعة" تلقائياً';
+  document.getElementById('modal-detail').innerHTML = `
+    <div class="mid-row"><span class="tm">الجهة</span><span class="fw7">${inv.vendor}</span></div>
+    <div class="mid-row"><span class="tm">رقم الفاتورة</span><span class="mono">${inv.num}</span></div>
+    <div class="mid-row"><span class="tm">التاريخ</span><span class="mono">${inv.date}</span></div>
+    <div class="mid-row"><span class="tm">المبلغ</span><span class="fw7 mono" style="color:${inv.type==='income'?'var(--P)':'var(--R)'};font-size:15px">${fmt(inv.amount)} ${inv.curr||currency}</span></div>`;
+  document.getElementById('modal-msg').textContent = 'هل تأكد استلام أو تنفيذ هذه الدفعة؟ لا يمكن التراجع عن هذا الإجراء.';
+  const btn = document.getElementById('modal-confirm-btn');
+  btn.textContent = '✅ نعم، تم الدفع';
+  btn.className = 'btn bg-btn';
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('open');
+  modalAction = null; modalInvId = null;
+}
+
+function statusBadge(status) {
+  const map = { pending: 'ba-b معلقة', approved: 'bp-b موافق عليها', paid: 'bg-b مدفوعة' };
+  const [cls, lbl] = (map[status] || 'bgr —').split(' ');
+  return `<span class="bdg ${cls}">${lbl}</span>`;
+}
+
+// ══ RENDER INVOICES ══
+function renderInvs() {
+  const el = document.getElementById('inv-list');
+  if (!el) return;
+  const f = document.getElementById('iv-filter')?.value || 'all';
+  let list = [...invoices];
+  if (f !== 'all') list = list.filter(i => i.status === f);
+  list.sort((a, b) => new Date(b.date||0) - new Date(a.date||0));
+
+  if (!list.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📄</div><div class="empty-title">لا توجد فواتير</div><div class="empty-sub">ارفع أول فاتورة PDF</div></div>';
+    return;
+  }
+
+  el.innerHTML = list.map(i => `
+    <div class="inv-card">
+      <div class="flex ic jb">
+        <div class="flex ic gap2">
+          <span style="font-size:18px">${i.type==='income'?'📥':'📤'}</span>
+          <div>
+            <div style="font-size:13px;font-weight:700">${i.vendor}</div>
+            <div class="tm">${i.num} · ${i.date} · ${i.cat} · ${i.curr||currency}</div>
+            ${i.pdfName?`<div class="tm" style="font-size:10px">📎 ${i.pdfName}</div>`:''}
+          </div>
+        </div>
+        <div style="text-align:left">
+          <div style="font-family:var(--mono);font-size:14px;font-weight:800;color:${i.type==='income'?'var(--P)':'var(--R)'}">${fmt(i.amount)}</div>
+          ${statusBadge(i.status)}
+        </div>
+      </div>
+      <div class="inv-status-row">
+        <span class="status-step ss-pending">📋 معلقة</span>
+        <span class="ss-arrow">→</span>
+        <span class="status-step ${i.status==='approved'||i.status==='paid'?'ss-approved':''}">✅ موافق عليها</span>
+        <span class="ss-arrow">→</span>
+        <span class="status-step ${i.status==='paid'?'ss-paid':''}">💳 مدفوعة</span>
+        ${i.status==='pending'?`
+          <div style="margin-right:auto;display:flex;gap:6px">
+            <button class="btn bg-btn bsm" onclick="openPaymentConfirm(${i.id})">تأكيد الدفع</button>
+          </div>`:
+        i.status==='paid'?`<span style="margin-right:auto;font-size:11px;color:var(--G);font-family:var(--mono)">✓ ${i.paidAt||'—'}</span>`:''}
+      </div>
+    </div>`).join('');
+}
+
+// ══ EMPLOYEE DASH ══
+function renderEmpDash() {
+  const s = calc();
+  const sym = currSym();
+  document.getElementById('ek-rev').textContent = fmt(s.rev);
+  document.getElementById('ek-exp').textContent = fmt(s.exp);
+  document.getElementById('ek-net').textContent = fmt(s.net);
+  document.getElementById('ek-margin').textContent = `هامش: ${s.margin}%`;
+  document.getElementById('ek-curr1').textContent = sym;
+  document.getElementById('ek-curr2').textContent = sym;
+  document.getElementById('ek-count').textContent = invoices.length + transactions.length;
+
+  const invEl = document.getElementById('e-dash-invs');
+  const ri = [...invoices].slice(-4).reverse();
+  invEl.innerHTML = ri.length ? ri.map(i=>`
+    <div class="flex ic jb mb2" style="padding:7px 0;border-bottom:1px solid var(--border)">
+      <div><div style="font-size:12px;font-weight:700">${i.vendor}</div><div class="tm">${i.num} · ${i.date} · ${i.curr||currency}</div></div>
+      <div style="text-align:left">
+        <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:${i.type==='income'?'var(--P)':'var(--R)'}">
+          ${i.type==='income'?'+':'-'}${fmt(i.amount)}
+        </div>
+        ${statusBadge(i.status)}
+      </div>
+    </div>`).join('')
+    : '<div class="empty"><div class="empty-icon">📄</div><div class="empty-title">لا توجد فواتير</div></div>';
+
+  const txEl = document.getElementById('e-dash-tx');
+  const rt = [...transactions].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,4);
+  txEl.innerHTML = rt.length ? rt.map(t=>`
+    <div class="flex ic jb mb2" style="padding:7px 0;border-bottom:1px solid var(--border)">
+      <div><div style="font-size:12px;font-weight:700">${t.desc}</div><div class="tm">${t.cat} · ${t.date} · ${t.curr||currency}</div></div>
+      <span style="font-family:var(--mono);font-size:12px;font-weight:700;color:${t.type==='income'?'var(--P)':'var(--R)'}">
+        ${t.type==='income'?'+':'-'}${fmt(t.amount)}
+      </span>
+    </div>`).join('')
+    : '<div class="empty"><div class="empty-icon">💱</div><div class="empty-title">لا توجد معاملات</div></div>';
+}
+
+// ══ TRANSACTIONS ══
+function addTx() {
+  const desc = document.getElementById('tx-desc').value.trim();
+  const amount = parseFloat(document.getElementById('tx-amt').value) || 0;
+  if (!desc || !amount) { toast('يرجى تعبئة الوصف والمبلغ', '⚠'); return; }
+  transactions.push({
+    id: txId++, desc, amount,
+    type: document.getElementById('tx-type').value,
+    cat: document.getElementById('tx-cat').value,
+    curr: document.getElementById('tx-curr').value,
+    date: document.getElementById('tx-date').value || new Date().toISOString().slice(0, 10),
+  });
+  ['tx-desc', 'tx-amt'].forEach(id => document.getElementById(id).value = '');
+  renderTxTable(); renderCatSum(); renderEmpDash();
+  toast('تم تسجيل المعاملة');
+}
+
+function renderTxTable() {
+  const tbody = document.getElementById('tx-tbody');
+  const table = document.getElementById('tx-table');
+  const empty = document.getElementById('tx-empty');
+  const ft = document.getElementById('tx-filter')?.value || 'all';
+  let list = [...transactions];
+  if (ft !== 'all') list = list.filter(t => t.type === ft);
+  list.sort((a, b) => new Date(b.date) - new Date(a.date));
+  if (!list.length) { table.style.display = 'none'; empty.style.display = 'block'; return; }
+  table.style.display = 'table'; empty.style.display = 'none';
+  tbody.innerHTML = list.map(t => `
+    <tr>
+      <td style="font-weight:600">${t.desc}</td>
+      <td><span class="bdg bgr">${t.cat}</span></td>
+      <td class="tm mono">${t.date}</td>
+      <td><span class="bdg ${t.type==='income'?'bg-b':'br-b'}">${t.type==='income'?'إيراد':'مصروف'}</span></td>
+      <td style="font-family:var(--mono);font-weight:700;color:${t.type==='income'?'var(--P)':'var(--R)'}">
+        ${t.type==='income'?'+':'-'}${fmt(t.amount)}
+      </td>
+      <td class="tm mono">${t.curr||currency}</td>
+    </tr>`).join('');
+}
+
+function renderCatSum() {
+  const el = document.getElementById('cat-sum');
+  if (!el) return;
+  const cats = {};
+  transactions.forEach(t => {
+    if (!cats[t.cat]) cats[t.cat] = { i: 0, e: 0 };
+    cats[t.cat][t.type==='income'?'i':'e'] += t.amount;
+  });
+  const entries = Object.entries(cats);
+  el.innerHTML = entries.length ? entries.map(([c,v]) => `
+    <div class="flex ic jb mb2" style="padding:7px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px">
+          <span style="width:7px;height:7px;border-radius:50%;background:${CATS[c]||'#64748b'};display:inline-block"></span>${c}
+        </div>
+        <div class="tm">${fmt(v.i)} إيراد · ${fmt(v.e)} مصروف</div>
+      </div>
+      <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:${v.i-v.e>=0?'var(--P)':'var(--R)'}">
+        ${v.i-v.e>=0?'+':''}${fmt(v.i-v.e)}
+      </div>
+    </div>`).join('')
+    : '<div class="empty" style="padding:20px"><div class="empty-icon" style="font-size:28px">📊</div><div class="empty-sub">لا توجد بيانات</div></div>';
+}
+
+// ══ AI ══
+async function askAdv(who) {
+  const q = document.getElementById(who+'-adv-q').value.trim();
+  if (!q) { toast('اكتب سؤالاً', '⚠'); return; }
+  await runAdv(who, q);
+}
+function quickQ(who, q) {
+  document.getElementById(who+'-adv-q').value = q;
+  runAdv(who, q);
+}
+async function runAdv(who, q) {
+  const btn = document.getElementById(who+'-adv-btn');
+  const out = document.getElementById(who+'-adv-out');
+  btn.disabled = true;
+  const cur = document.createElement('span'); cur.className = 'ai-cur';
+  out.textContent = ''; out.appendChild(cur);
+  const s = calc();
+  const catExp = {};
+  transactions.filter(t=>t.type==='expense').forEach(t=>{catExp[t.cat]=(catExp[t.cat]||0)+t.amount;});
+  const sym = currSym();
+  const prompt = `أنت مستشار مالي متخصص في القطاع المصرفي لمصرف الكريمي.
+البيانات المالية (${currency} - ${sym}):
+إيرادات: ${fmt(s.rev)} | مصاريف: ${fmt(s.exp)} | صافي: ${fmt(s.net)} | هامش: ${s.margin}%
+فواتير معلقة: ${s.pend} بقيمة ${fmt(s.pendVal)}
+المصاريف: ${JSON.stringify(catExp)}
+السؤال: ${q}
+أجب بتحليل مفصل ومنظم باللغة العربية مع توصيات عملية للقطاع المصرفي.`;
+  try {
+    const r = await callAPI(prompt, 1400);
+    cur.remove(); out.textContent = r;
+  } catch(e) { cur.remove(); out.textContent = 'حدث خطأ في الاتصال. تأكد من رفع النظام على Vercel.'; }
+  btn.disabled = false;
+}
+
+function renderRepSum() {
+  const s = calc();
+  const sym = currSym();
+  const el = document.getElementById('m-rep-sum');
+  if (!el) return;
+  const noData = invoices.length === 0 && transactions.length === 0;
+  if (noData) { el.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><div class="empty-sub">لا توجد بيانات — يرجى الدخول كموظف وإدخال البيانات</div></div>'; return; }
+  const rows = [
+    ['الإيرادات', `${fmt(s.rev)} ${sym}`, 'var(--P)'],
+    ['المصاريف', `${fmt(s.exp)} ${sym}`, 'var(--R)'],
+    ['صافي الربح', `${fmt(s.net)} ${sym}`, s.net>=0?'var(--P)':'var(--R)'],
+    ['هامش الربح', s.margin+'%', 'var(--T)'],
+    ['فواتير معلقة', s.pend+' فاتورة', 'var(--gold)'],
+    ['قيمة المعلق', `${fmt(s.pendVal)} ${sym}`, 'var(--gold)'],
+    ['إجمالي المعاملات', transactions.length+' معاملة', 'var(--muted)'],
+  ];
+  el.innerHTML = rows.map(([l,v,c])=>`
+    <div class="flex ic jb mb2" style="padding:7px 0;border-bottom:1px solid var(--border)">
+      <span class="tm">${l}</span>
+      <span style="font-family:var(--mono);font-size:12px;font-weight:700;color:${c}">${v}</span>
+    </div>`).join('');
+}
+
+async function genReport() {
+  const type = document.getElementById('m-rep-type').value;
+  const notes = document.getElementById('m-rep-notes').value.trim();
+  const btn = document.getElementById('m-rep-btn');
+  const out = document.getElementById('m-rep-out');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="width:11px;height:11px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block"></span> جاري الإنشاء...';
+  const cur = document.createElement('span'); cur.className = 'ai-cur';
+  out.textContent = ''; out.appendChild(cur);
+  const s = calc();
+  const sym = currSym();
+  const catExp = {};
+  transactions.filter(t=>t.type==='expense').forEach(t=>{catExp[t.cat]=(catExp[t.cat]||0)+t.amount;});
+  const typeMap = { monthly:'تقرير مالي شهري شامل', profit:'تقرير الأرباح والخسائر', cashflow:'تقرير التدفق النقدي', forecast:'توقعات الربع القادم', tax:'ملخص ضريبي' };
+  const prompt = `أنت محاسب قانوني متخصص في القطاع المصرفي. اكتب ${typeMap[type]} احترافياً للكريمي المصرفية:
+العملة: ${currency} (${sym})
+إيرادات: ${fmt(s.rev)} | مصاريف: ${fmt(s.exp)} | صافي: ${fmt(s.net)} | هامش: ${s.margin}%
+فواتير معلقة: ${s.pend} (${fmt(s.pendVal)} ${sym})
+المصاريف: ${Object.entries(catExp).map(([k,v])=>`${k}: ${fmt(v)}`).join('، ')}
+${notes?'ملاحظات: '+notes:''}
+اكتب بصيغة مصرفية رسمية: ملخص تنفيذي، التحليل المفصل، الملاحظات، التوصيات.`;
+  try {
+    const r = await callAPI(prompt, 1600);
+    cur.remove(); out.textContent = r;
+  } catch(e) { cur.remove(); out.textContent = 'حدث خطأ في الاتصال.'; }
+  btn.disabled = false;
+  btn.textContent = 'إنشاء التقرير';
+}
+
+// ══ API & FILE ══
+async function callAPI(prompt, maxTokens=1000) {
+  const res = await fetch('/api/claude', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.content.map(b => b.text||'').join('');
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ══ INIT ══
+const st = document.createElement('style');
+st.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+document.head.appendChild(st);
+selectRole('manager');
+document.getElementById('username').value = 'manager';
+document.getElementById('password').value = '1234';
+initDate();
+</script>
+</body>
+</html>
